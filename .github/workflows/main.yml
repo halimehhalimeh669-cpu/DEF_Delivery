@@ -28,12 +28,22 @@ jobs:
         run: |
           mkdir -p source
           unzip -q DEFDelivery_Black_Gold_Final.zip -d source
+
+          echo "=== PROJECT FILES ==="
+          find source -maxdepth 7 -type f | sort | head -200
+
+          echo "=== KOTLIN AND JAVA FILES ==="
+          find source -type f \( -name '*.kt' -o -name '*.java' \) | sort
+
           find source -type f \( -name ic_launcher.xml -o -name ic_launcher_round.xml \) -exec sed -i 's|@drawable-nodpi/|@drawable/|g' {} +
+
           PROJECT_DIR=$(find source -type f \( -name settings.gradle -o -name settings.gradle.kts \) | head -n 1 | xargs dirname)
+
           if [ -z "$PROJECT_DIR" ]; then
             echo "Android project not found"
             exit 1
           fi
+
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
       - name: Generate debug keystore
