@@ -24,18 +24,10 @@ jobs:
       - name: Accept Android SDK licenses
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
 
-      - name: Extract project
+      - name: Extract project and inspect source
         run: |
           mkdir -p source
           unzip -q DEFDelivery_Black_Gold_Final.zip -d source
-
-          echo "=== PROJECT FILES ==="
-          find source -maxdepth 7 -type f | sort | head -200
-
-          echo "=== KOTLIN AND JAVA FILES ==="
-          find source -type f \( -name '*.kt' -o -name '*.java' \) | sort
-
-          find source -type f \( -name ic_launcher.xml -o -name ic_launcher_round.xml \) -exec sed -i 's|@drawable-nodpi/|@drawable/|g' {} +
 
           PROJECT_DIR=$(find source -type f \( -name settings.gradle -o -name settings.gradle.kts \) | head -n 1 | xargs dirname)
 
@@ -45,6 +37,17 @@ jobs:
           fi
 
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+          echo "========== MAIN ACTIVITY =========="
+          cat "$PROJECT_DIR/app/src/main/java/com/example/MainActivity.kt"
+
+          echo "========== FIRESTORE RULES =========="
+          cat "$PROJECT_DIR/firestore.rules"
+
+          echo "========== APP GRADLE =========="
+          cat "$PROJECT_DIR/app/build.gradle.kts"
+
+          find source -type f \( -name ic_launcher.xml -o -name ic_launcher_round.xml \) -exec sed -i 's|@drawable-nodpi/|@drawable/|g' {} +
 
       - name: Generate debug keystore
         run: |
