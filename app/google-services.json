@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "892792881030",
+    "firebase_url": "https://def-delivery-default-rtdb.firebaseio.com",
+    "project_id": "def-delivery",
+    "storage_bucket": "def-delivery.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892792881030:android:e09368637d44cb63007607",
+        "android_client_info": {
+          "package_name": "com.defdelivery.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2BboBtvRGt-7fiGTjoB02gueK5mAIgRE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
