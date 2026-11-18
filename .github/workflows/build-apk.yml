@@ -3,31 +3,46 @@ on:
   workflow_dispatch:
   push:
     branches: [ main, master ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+
       - name: Install Android SDK packages
         run: sdkmanager "platform-tools" "platforms;android-36.1" "build-tools;36.0.0"
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '9.3.1'
+
+      - name: Locate Android project inside uploaded ZIP
+        run: |
+          mkdir -p source
+          unzip -q DEFDelivery_Black_Gold_Final.zip -d source
+          PROJECT_DIR=$(find source -type f \( -name settings.gradle -o -name settings.gradle.kts \) | head -n 1 | xargs dirname)
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "Android project not found inside DEFDelivery_Black_Gold_Final.zip"
+            exit 1
+          fi
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "Found Android project at: $PROJECT_DIR"
+
       - name: Decode release signing key
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
           test -n "$KEYSTORE_BASE64" || (echo "Missing KEYSTORE_BASE64 GitHub secret" && exit 1)
           echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/my-upload-key.jks"
+          test -s "$RUNNER_TEMP/my-upload-key.jks"
+
       - name: Build signed release APK and AAB
         env:
           KEYSTORE_PATH: ${{ runner.temp }}/my-upload-key.jks
@@ -36,12 +51,14 @@ jobs:
         run: |
           test -n "$STORE_PASSWORD" || (echo "Missing STORE_PASSWORD GitHub secret" && exit 1)
           test -n "$KEY_PASSWORD" || (echo "Missing KEY_PASSWORD GitHub secret" && exit 1)
-          gradle --no-daemon :app:assembleRelease :app:bundleRelease
+          gradle --no-daemon -p "$PROJECT_DIR" :app:assembleRelease :app:bundleRelease
+
       - name: Upload signed release files
         uses: actions/upload-artifact@v4
         with:
           name: DEF-Delivery-release
           path: |
-            app/build/outputs/apk/release/app-release.apk
-            app/build/outputs/bundle/release/app-release.aab
+            ${{ env.PROJECT_DIR }}/app/build/outputs/apk/release/app-release.apk
+            ${{ env.PROJECT_DIR }}/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
+          
