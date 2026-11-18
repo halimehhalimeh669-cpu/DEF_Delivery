@@ -41,10 +41,11 @@ new = """class MainActivity : ComponentActivity() {
     private fun createOrderNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "def_new_orders", "DEF Delivery - New Orders", NotificationManager.IMPORTANCE_HIGH
+                "def_new_orders_v2", "DEF Delivery - New Orders", NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Alerts when a new delivery request arrives"
                 enableVibration(true)
+                vibrationPattern = longArrayOf(0, 500, 250, 500)
                 setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI,
                     android.media.AudioAttributes.Builder()
                         .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION)
@@ -58,7 +59,7 @@ new = """class MainActivity : ComponentActivity() {
     fun showNewOrderNotification(customerName: String, orderId: String) {
         if (Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
-        val notification = NotificationCompat.Builder(this, "def_new_orders")
+        val notification = NotificationCompat.Builder(this, "def_new_orders_v2")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("DEF Delivery - New Order!")
             .setContentText(if (customerName.isBlank()) "A new delivery request has arrived." else "New order from $customerName")
