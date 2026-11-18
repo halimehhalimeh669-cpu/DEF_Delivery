@@ -43,6 +43,13 @@ jobs:
 
           find "$PROJECT_DIR/app/src" -type f \( -name "ic_launcher.xml" -o -name "ic_launcher_round.xml" \) -exec sed -i 's|@drawable-nodpi/|@drawable/|g' {} +
 
+      - name: Upload unpacked source for notification integration review
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEF-Delivery-source-review
+          path: ${{ env.PROJECT_DIR }}
+          if-no-files-found: error
+
       - name: Decode release signing key
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
