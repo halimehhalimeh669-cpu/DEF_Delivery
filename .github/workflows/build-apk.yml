@@ -21,14 +21,13 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           accept-android-sdk-licenses: false
+          packages: platform-tools
 
       - name: Accept Android SDK licenses
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager --licenses
+        run: yes | sdkmanager --licenses
 
       - name: Install Android SDK packages
-        run: sdkmanager "platform-tools" "platforms;android-36.1" "build-tools;36.0.0"
+        run: sdkmanager "platforms;android-36.1" "build-tools;36.0.0"
 
       - name: Locate Android project inside uploaded ZIP
         run: |
