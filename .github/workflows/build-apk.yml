@@ -43,7 +43,7 @@ jobs:
 
           find "$PROJECT_DIR/app/src" -type f \( -name "ic_launcher.xml" -o -name "ic_launcher_round.xml" \) -exec sed -i 's|@drawable-nodpi/|@drawable/|g' {} +
 
-          python3 scripts/add-order-notifications.py "$PROJECT_DIR"
+          python3 scripts/add-order-notifications.py "$PROJECT_DIR"\n          python3 scripts/add-fcm-push.py "$PROJECT_DIR"
 
       - name: Upload unpacked source for notification integration review
         uses: actions/upload-artifact@v4
