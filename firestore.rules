@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email == 'halimehhalimeh669@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+
+    function validService(value) {
+      return value in [
+        'Restaurants & food',
+        'Shopping & everything',
+        'Parcels & other items'
+      ];
+    }
+
+    function validAreaAndFee(data) {
+      return (
+        data.area == 'Aley & Aley District' && data.deliveryFee == '$1.50'
+      ) || (
+        data.area == 'Baabda & Baabda District' && data.deliveryFee == '$3.00'
+      ) || (
+        data.area == 'Beirut' && data.deliveryFee == '$6.00'
+      ) || (
+        data.area == 'Shouf & Chouf District' && data.deliveryFee == '$6.00'
+      );
+    }
+
+    match /deliveryRequests/{requestId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'ownerUid', 'customerName', 'customerPhone', 'service', 'area',
+          'deliveryFee', 'pickupAddress', 'deliveryAddress', 'notes',
+          'status', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'ownerUid', 'customerName', 'customerPhone', 'service', 'area',
+          'deliveryFee', 'pickupAddress', 'deliveryAddress', 'notes',
+          'status', 'createdAt'
+        ])
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.customerName is string
+        && request.resource.data.customerName.size() > 0
+        && request.resource.data.customerName.size() <= 100
+        && request.resource.data.customerPhone is string
+        && request.resource.data.customerPhone.size() >= 6
+        && request.resource.data.customerPhone.size() <= 30
+        && validService(request.resource.data.service)
+        && validAreaAndFee(request.resource.data)
+        && request.resource.data.pickupAddress is string
+        && request.resource.data.pickupAddress.size() > 0
+        && request.resource.data.pickupAddress.size() <= 500
+        && request.resource.data.deliveryAddress is string
+        && request.resource.data.deliveryAddress.size() > 0
+        && request.resource.data.deliveryAddress.size() <= 500
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 1000
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.ownerUid == request.auth.uid);
+
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['pending', 'accepted', 'picked_up', 'on_the_way', 'delivered', 'cancelled'];
+
+      allow delete: if false;
+    }
+
+    match /adminDevices/{deviceId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['token', 'email', 'updatedAt'])
+        && request.resource.data.token is string
+        && request.resource.data.email == 'halimehhalimeh669@gmail.com';
+      allow delete: if isAdmin();
+    }
+  }
+}
