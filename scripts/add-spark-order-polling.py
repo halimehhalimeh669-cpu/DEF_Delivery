@@ -52,7 +52,7 @@ import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.Timestamp
+import com.google.firebase.Timestamp
 import com.google.android.gms.tasks.Tasks
 import java.util.Date
 import java.util.concurrent.TimeUnit
