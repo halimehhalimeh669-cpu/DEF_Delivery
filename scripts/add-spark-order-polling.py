@@ -21,7 +21,7 @@ manifest.write_text(m)
 
 a = activity.read_text()
 needle = '                                            if (user?.isEmailVerified == true) {'
-if 'AdminOrderPolling.start(this@MainActivity)' not in a:
+if 'AdminOrderPolling.start(context)' not in a:
     if needle not in a:
         raise SystemExit('Verified admin login insertion point not found')
     a = a.replace(needle, needle + '\n                                                AdminOrderPolling.start(this@MainActivity)', 1)
