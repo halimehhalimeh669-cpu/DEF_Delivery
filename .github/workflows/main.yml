@@ -52,8 +52,8 @@ jobs:
       - name: Patch audible new-order notifications
         run: python3 scripts/add-order-notifications.py "$PROJECT_DIR"
 
-      - name: Patch Firebase Cloud Messaging support
-        run: python3 scripts/add-fcm-push.py "$PROJECT_DIR"
+      - name: Add Spark-compatible background order polling
+        run: python3 scripts/add-spark-order-polling.py "$PROJECT_DIR"
 
       - name: Generate debug keystore
         run: |
