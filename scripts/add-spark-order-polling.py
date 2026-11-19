@@ -20,6 +20,10 @@ if perm not in m:
 manifest.write_text(m)
 
 a = activity.read_text()
+if "import androidx.compose.ui.platform.LocalContext" not in a:
+    a = a.replace("import androidx.compose.ui.platform.LocalLayoutDirection\\n", "import androidx.compose.ui.platform.LocalLayoutDirection\\nimport androidx.compose.ui.platform.LocalContext\\n", 1)
+if "val context = LocalContext.current" not in a:
+    a = a.replace("fun DEFDeliveryApp() {", "fun DEFDeliveryApp() {\\n    val context = LocalContext.current", 1)
 needle = '                                            if (user?.isEmailVerified == true) {'
 if 'AdminOrderPolling.start(context)' not in a:
     if needle not in a:
