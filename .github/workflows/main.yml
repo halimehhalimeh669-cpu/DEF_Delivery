@@ -49,6 +49,9 @@ jobs:
 
           find source -type f \( -name ic_launcher.xml -o -name ic_launcher_round.xml \) -exec sed -i 's|@drawable-nodpi/|@drawable/|g' {} +
 
+      - name: Patch audible new-order notifications
+        run: python3 scripts/add-order-notifications.py "$PROJECT_DIR"
+
       - name: Generate debug keystore
         run: |
           keytool -genkeypair -v \
