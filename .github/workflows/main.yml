@@ -52,7 +52,7 @@ jobs:
       - name: Patch audible new-order notifications
         run: python3 scripts/add-order-notifications.py "$PROJECT_DIR"
 
-      - name: Generate debug keystore
+      - name: Patch Firebase Cloud Messaging support\n        run: python3 scripts/add-fcm-push.py "$PROJECT_DIR"\n\n      - name: Generate debug keystore
         run: |
           keytool -genkeypair -v \
             -keystore "$PROJECT_DIR/debug.keystore" \
